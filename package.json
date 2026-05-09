@@ -1,0 +1,77 @@
+{
+  "name": "tanstack-start-testing-library",
+  "version": "0.0.0",
+  "description": "Testing utilities for TanStack Start server functions",
+  "license": "MIT",
+  "type": "module",
+  "types": "dist/esm/index.d.ts",
+  "module": "dist/esm/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      }
+    },
+    "./vitest": {
+      "import": {
+        "types": "./dist/esm/vitest.d.ts",
+        "default": "./dist/esm/vitest.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "clean": "rimraf ./dist && rimraf ./coverage",
+    "test:unit": "vitest",
+    "test:unit:dev": "pnpm run test:unit --watch",
+    "test:types": "tsc",
+    "test:eslint": "eslint ./src",
+    "test:build": "publint --strict && attw --ignore-rules no-resolution --pack .",
+    "build": "vite build",
+    "test": "pnpm test:eslint && pnpm test:types && pnpm test:unit && pnpm build && NPM_CONFIG_CACHE=/private/tmp/npm-cache pnpm test:build"
+  },
+  "dependencies": {
+    "@babel/core": "^7.28.5",
+    "@tanstack/router-core": "1.169.2",
+    "@tanstack/start-client-core": "1.168.2",
+    "@tanstack/start-server-core": "1.167.30",
+    "@tanstack/start-storage-context": "1.166.35",
+    "seroval": "^1.5.4"
+  },
+  "peerDependencies": {
+    "@tanstack/react-start": "1.167.65",
+    "@tanstack/start-plugin-core": "1.169.20",
+    "vitest": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "vitest": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.2",
+    "@eslint/js": "^10.0.1",
+    "@tanstack/react-start": "1.167.65",
+    "@tanstack/start-plugin-core": "1.169.20",
+    "@tanstack/vite-config": "0.5.2",
+    "@types/babel__core": "^7.20.5",
+    "@types/node": ">=20",
+    "eslint": "^10.3.0",
+    "publint": "^0.3.20",
+    "rimraf": "^6.1.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.2",
+    "vite": "*",
+    "vitest": "*"
+  },
+  "packageManager": "pnpm@10.28.0"
+}
