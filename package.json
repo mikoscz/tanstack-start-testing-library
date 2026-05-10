@@ -1,6 +1,6 @@
 {
   "name": "tanstack-start-testing-library",
-  "version": "0.0.0",
+  "version": "0.1.0-alpha.0",
   "description": "Testing utilities for TanStack Start server functions",
   "license": "MIT",
   "type": "module",
