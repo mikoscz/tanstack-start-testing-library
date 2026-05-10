@@ -1,14 +1,16 @@
 # tanstack-start-testing-library
 
-Experimental test harness for TanStack Start server functions.
+> Warning: this is a highly experimental package. It depends on TanStack Start
+> private compiler/runtime APIs and can break on TanStack Start upgrades.
 
-This package intentionally depends on TanStack Start private compiler/runtime
-contracts. Keep supported TanStack versions narrow and run the package tests
-when upgrading TanStack Start.
+Test TanStack Start `createServerFn` functions end to end from Vitest without
+starting an HTTP server. The harness exercises middleware, validation, request
+parsing, serialization, and the handler through an in-memory `fetch`.
 
-## Vitest Setup
+## Setup
 
 ```ts
+// vitest.config.ts
 import { defineConfig } from 'vitest/config'
 import { serverFnTestHarnessPlugin } from 'tanstack-start-testing-library/vitest'
 
@@ -20,7 +22,7 @@ export default defineConfig({
 })
 ```
 
-## Reference-Based Usage
+## Usage
 
 ```ts
 import { expect, test } from 'vitest'
@@ -47,7 +49,3 @@ const harness = await createServerFnTestHarness(greet, {
   exportName: 'greet',
 })
 ```
-
-The harness compiles the server function for the client and server provider
-paths, then calls it through an in-memory `fetch` implementation that exercises
-middleware, validation, request parsing, serialization, and the handler.
