@@ -32,9 +32,7 @@ import { greet } from './server-functions'
 test('greet', async () => {
   const harness = await createServerFnTestHarness(greet)
 
-  await expect(
-    harness.call({ data: { name: 'tanner' } }),
-  ).resolves.toEqual({
+  await expect(harness.call({ data: { name: 'tanner' } })).resolves.toEqual({
     message: 'TANNER',
   })
 })

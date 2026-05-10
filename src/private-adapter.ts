@@ -24,9 +24,7 @@ type RequestResponseRuntime = {
 }
 
 let startCompilerPromise: Promise<StartCompilerConstructor> | undefined
-let requestResponseRuntimePromise:
-  | Promise<RequestResponseRuntime>
-  | undefined
+let requestResponseRuntimePromise: Promise<RequestResponseRuntime> | undefined
 
 export async function loadStartCompiler(): Promise<StartCompilerConstructor> {
   startCompilerPromise ??= importPrivateModule<{
@@ -47,10 +45,7 @@ export async function loadRequestResponseRuntime() {
   return requestResponseRuntimePromise
 }
 
-async function importPrivateModule<T>(
-  packageName: string,
-  relativePath: string,
-): Promise<T> {
+async function importPrivateModule<T>(packageName: string, relativePath: string): Promise<T> {
   const require = createRequire(import.meta.url)
   const packageJsonPath = require.resolve(`${packageName}/package.json`)
   const packageRoot = path.dirname(packageJsonPath)

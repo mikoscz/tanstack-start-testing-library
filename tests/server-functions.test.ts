@@ -9,9 +9,7 @@ describe('createServerFnTestHarness', () => {
       exportName: 'greet',
     })
 
-    await expect(
-      harness.call({ data: { name: 'tanner' } }),
-    ).resolves.toEqual({
+    await expect(harness.call({ data: { name: 'tanner' } })).resolves.toEqual({
       message: 'TANNER:client-value:server-value',
     })
   })
@@ -19,9 +17,7 @@ describe('createServerFnTestHarness', () => {
   test('runs a server function from a reference when the Vitest plugin injects metadata', async () => {
     const harness = await createServerFnTestHarness(greet)
 
-    await expect(
-      harness.call({ data: { name: 'tanner' } }),
-    ).resolves.toEqual({
+    await expect(harness.call({ data: { name: 'tanner' } })).resolves.toEqual({
       message: 'TANNER:client-value:server-value',
     })
   })

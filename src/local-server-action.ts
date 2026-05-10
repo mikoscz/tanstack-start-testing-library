@@ -16,10 +16,7 @@ type ServerFnResolver = (
 
 let serovalPlugins: Array<SerovalPlugin<any, any>> | undefined
 
-const formDataContentTypes = [
-  'multipart/form-data',
-  'application/x-www-form-urlencoded',
-]
+const formDataContentTypes = ['multipart/form-data', 'application/x-www-form-urlencoded']
 
 const maxPayloadSize = 1_000_000
 
@@ -37,15 +34,12 @@ export async function handleLocalServerAction(opts: {
   })
 
   if (action.method && methodUpper !== action.method) {
-    return new Response(
-      `expected ${action.method} method. Got ${methodUpper}`,
-      {
-        status: 405,
-        headers: {
-          Allow: action.method,
-        },
+    return new Response(`expected ${action.method} method. Got ${methodUpper}`, {
+      status: 405,
+      headers: {
+        Allow: action.method,
       },
-    )
+    })
   }
 
   serovalPlugins ??= getDefaultSerovalPlugins()
@@ -97,11 +91,7 @@ async function callAction(opts: {
   request: Request
   url: URL
 }) {
-  if (
-    formDataContentTypes.some(
-      (type) => opts.contentType && opts.contentType.includes(type),
-    )
-  ) {
+  if (formDataContentTypes.some((type) => opts.contentType && opts.contentType.includes(type))) {
     if (opts.methodUpper === 'GET') {
       throw new Error('GET requests with FormData payloads are not supported')
     }
@@ -118,10 +108,7 @@ async function callAction(opts: {
       })
 
       if (typeof deserializedContext === 'object' && deserializedContext) {
-        context = safeObjectMerge(
-          deserializedContext as Record<string, unknown>,
-          opts.context,
-        )
+        context = safeObjectMerge(deserializedContext as Record<string, unknown>, opts.context)
       }
     }
 
@@ -154,9 +141,7 @@ async function callAction(opts: {
     jsonPayload = await opts.request.json()
   }
 
-  const payload: any = jsonPayload
-    ? fromJSON(jsonPayload, { plugins: serovalPlugins })
-    : {}
+  const payload: any = jsonPayload ? fromJSON(jsonPayload, { plugins: serovalPlugins }) : {}
 
   payload.context = safeObjectMerge(payload.context, opts.context)
   payload.method = opts.methodUpper
@@ -216,7 +201,7 @@ function createNotFoundResponse(error: any) {
     status: 404,
     headers: {
       'Content-Type': 'application/json',
-      ...(headers || {}),
+      ...headers,
     },
   })
 }

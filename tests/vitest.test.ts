@@ -8,9 +8,7 @@ describe('serverFnTestHarnessPlugin', () => {
     })
 
     const transform =
-      typeof plugin.transform === 'function'
-        ? plugin.transform
-        : plugin.transform?.handler
+      typeof plugin.transform === 'function' ? plugin.transform : plugin.transform?.handler
 
     const result = await transform?.call(
       {} as never,
@@ -24,8 +22,7 @@ describe('serverFnTestHarnessPlugin', () => {
     )
 
     expect(result).toBeTruthy()
-    const transformedCode =
-      result && typeof result === 'object' ? result.code : result
+    const transformedCode = result && typeof result === 'object' ? result.code : result
 
     expect(transformedCode).toContain(
       'module: new URL("./fixtures/greet.functions", import.meta.url)',

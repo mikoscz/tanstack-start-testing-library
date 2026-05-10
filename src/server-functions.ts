@@ -2,18 +2,12 @@ import { access, readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import babel from '@babel/core'
-import {
-  createMiddleware,
-  createServerFn,
-} from '@tanstack/start-client-core'
+import { createMiddleware, createServerFn } from '@tanstack/start-client-core'
 import { createClientRpc } from '@tanstack/start-client-core/client-rpc'
 import { runWithStartContext } from '@tanstack/start-storage-context'
 import { createServerRpc } from '@tanstack/start-server-core/createServerRpc'
 import { handleLocalServerAction } from './local-server-action'
-import {
-  loadRequestResponseRuntime,
-  loadStartCompiler,
-} from './private-adapter'
+import { loadRequestResponseRuntime, loadStartCompiler } from './private-adapter'
 import type { CustomFetch } from '@tanstack/start-client-core'
 import type { PluginObj } from '@babel/core'
 import type { ServerFnInfo } from './private-adapter'
@@ -41,17 +35,15 @@ type CreateServerFnTestHarnessSource =
       id?: never
     }
 
-export type CreateServerFnTestHarnessMetadata =
-  CreateServerFnTestHarnessSource & {
-    exportName: string
-  }
+export type CreateServerFnTestHarnessMetadata = CreateServerFnTestHarnessSource & {
+  exportName: string
+}
 
-export type CreateServerFnTestHarnessOptions =
-  CreateServerFnTestHarnessMetadata & {
-    serverFnBase?: string
-    origin?: string
-    requestContext?: Record<string, unknown>
-  }
+export type CreateServerFnTestHarnessOptions = CreateServerFnTestHarnessMetadata & {
+  serverFnBase?: string
+  origin?: string
+  requestContext?: Record<string, unknown>
+}
 
 export interface ServerFnTestHarness<TFn extends (...args: Array<any>) => any> {
   functionId: string
@@ -63,18 +55,13 @@ const TSS_SERVERFN_SPLIT_PARAM = 'tss-serverfn-split'
 
 export async function createServerFnTestHarness<
   TFn extends (...args: Array<any>) => any = (...args: Array<any>) => any,
->(
-  serverFn: TFn,
-  metadata: CreateServerFnTestHarnessOptions,
-): Promise<ServerFnTestHarness<TFn>>
+>(serverFn: TFn, metadata: CreateServerFnTestHarnessOptions): Promise<ServerFnTestHarness<TFn>>
 export async function createServerFnTestHarness<
   TFn extends (...args: Array<any>) => any = (...args: Array<any>) => any,
 >(serverFn: TFn): Promise<ServerFnTestHarness<TFn>>
 export async function createServerFnTestHarness<
   TFn extends (...args: Array<any>) => any = (...args: Array<any>) => any,
->(
-  opts: CreateServerFnTestHarnessOptions,
-): Promise<ServerFnTestHarness<TFn>>
+>(opts: CreateServerFnTestHarnessOptions): Promise<ServerFnTestHarness<TFn>>
 export async function createServerFnTestHarness<
   TFn extends (...args: Array<any>) => any = (...args: Array<any>) => any,
 >(
@@ -105,14 +92,9 @@ export async function createServerFnTestHarness<
   })
 
   const serverFnInfo = findServerFnInfo(serverFnsById, opts.exportName)
-  const providerModule = evaluateCompiledModule(providerCode, [
-    serverFnInfo.functionName,
-  ])
+  const providerModule = evaluateCompiledModule(providerCode, [serverFnInfo.functionName])
 
-  const getServerFnById = (
-    functionId: string,
-    _access: { origin: 'client' | 'server' },
-  ) => {
+  const getServerFnById = (functionId: string, _access: { origin: 'client' | 'server' }) => {
     if (functionId !== serverFnInfo.functionId) {
       throw new Error(`Unknown server function id: ${functionId}`)
     }
@@ -123,9 +105,7 @@ export async function createServerFnTestHarness<
   const fetch: CustomFetch = async (url, requestInit) => {
     const { getResponse, requestHandler } = await loadRequestResponseRuntime()
     const requestUrl = new URL(String(url), origin)
-    const serverFnId = requestUrl.pathname
-      .slice(serverFnBase.length)
-      .split('/')[0]
+    const serverFnId = requestUrl.pathname.slice(serverFnBase.length).split('/')[0]
 
     if (!requestUrl.pathname.startsWith(serverFnBase) || !serverFnId) {
       throw new Error(`Invalid server function URL: ${requestUrl.href}`)
@@ -163,9 +143,7 @@ export async function createServerFnTestHarness<
     const clientFn = clientModule[opts.exportName] as TFn | undefined
 
     if (typeof clientFn !== 'function') {
-      throw new Error(
-        `Compiled client export is not a function: ${opts.exportName}`,
-      )
+      throw new Error(`Compiled client export is not a function: ${opts.exportName}`)
     }
 
     return {
@@ -173,9 +151,7 @@ export async function createServerFnTestHarness<
       fetch,
       call: ((firstArg?: any, ...rest: Array<any>) => {
         const callOptions =
-          firstArg && typeof firstArg === 'object'
-            ? { ...firstArg, fetch }
-            : { fetch }
+          firstArg && typeof firstArg === 'object' ? { ...firstArg, fetch } : { fetch }
 
         return clientFn(callOptions, ...rest)
       }) as ServerFnTestHarness<TFn>['call'],
@@ -231,8 +207,7 @@ async function resolveServerFnSource(
 }
 
 async function resolveModulePath(moduleId: string | URL) {
-  const modulePath =
-    moduleId instanceof URL ? fileURLToPath(moduleId) : path.resolve(moduleId)
+  const modulePath = moduleId instanceof URL ? fileURLToPath(moduleId) : path.resolve(moduleId)
 
   try {
     await access(modulePath)
@@ -341,14 +316,9 @@ async function createCompiler(opts: {
   })
 }
 
-function findServerFnInfo(
-  serverFnsById: ServerFnRecord,
-  exportName: string,
-) {
+function findServerFnInfo(serverFnsById: ServerFnRecord, exportName: string) {
   const functionName = `${exportName}_createServerFn_handler`
-  const serverFnInfo = Object.values(serverFnsById).find(
-    (d) => d.functionName === functionName,
-  )
+  const serverFnInfo = Object.values(serverFnsById).find((d) => d.functionName === functionName)
 
   if (!serverFnInfo) {
     throw new Error(`Server function export not found: ${exportName}`)
@@ -375,9 +345,7 @@ function evaluateCompiledModule(code: string, exportNames: Array<string>) {
     .map((name) => `${JSON.stringify(name)}: ${name}`)
     .join(', ')} }`
 
-  return new Function(...names, `${transformed}\n${returnStatement}`)(
-    ...values,
-  ) as ModuleExports
+  return new Function(...names, `${transformed}\n${returnStatement}`)(...values) as ModuleExports
 }
 
 function transpileTypescript(code: string) {
@@ -428,8 +396,7 @@ function stripTypescriptSyntaxPlugin(): PluginObj {
         }
 
         path.node.specifiers = path.node.specifiers.filter(
-          (specifier) =>
-            !('importKind' in specifier && specifier.importKind === 'type'),
+          (specifier) => !('importKind' in specifier && specifier.importKind === 'type'),
         )
       },
       ExportNamedDeclaration(path) {

@@ -11,13 +11,8 @@ const defaultImportSources = [
   'tanstack-start-testing-library/server-functions',
 ]
 
-export function serverFnTestHarnessPlugin(
-  opts: ServerFnTestHarnessPluginOptions = {},
-): Plugin {
-  const importSources = new Set([
-    ...defaultImportSources,
-    ...(opts.importSources ?? []),
-  ])
+export function serverFnTestHarnessPlugin(opts: ServerFnTestHarnessPluginOptions = {}): Plugin {
+  const importSources = new Set([...defaultImportSources, ...(opts.importSources ?? [])])
 
   return {
     name: 'tanstack-start-testing-library:server-fn-harness',
@@ -80,14 +75,10 @@ function createTransformPlugin(importSources: Set<string>): PluginObj {
             }
 
             const imported = specifier.node.imported
-            const importedName =
-              imported.type === 'Identifier' ? imported.name : imported.value
+            const importedName = imported.type === 'Identifier' ? imported.name : imported.value
             const localName = specifier.node.local.name
 
-            if (
-              importedName === 'createServerFnTestHarness' &&
-              importSources.has(source)
-            ) {
+            if (importedName === 'createServerFnTestHarness' && importSources.has(source)) {
               harnessBindings.add(localName)
               continue
             }
